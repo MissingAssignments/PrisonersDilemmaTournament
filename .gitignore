@@ -8,6 +8,7 @@ __pycache__/
 */results.txt
 .DS_Store
 results.txt
+*.txt
 
 # C extensions
 *.so

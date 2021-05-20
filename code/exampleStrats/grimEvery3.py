@@ -19,6 +19,17 @@ def strategy(history, memory):
 			wronged = True
 
 	if wronged:
-		return 0, (True, memory[1]+1)
-	else:
-		return 1, (False, memory[1]+1)
+		if not memory[1] % 3 == 0: # 3
+			return 0, (True, memory[1]+1)
+	return 1, (False, memory[1]+1)
+
+'''
+SCORE HISTORY:
+2.414
+2.389
+2.424
+2.404
+2.406
+2.407
+2.408
+'''

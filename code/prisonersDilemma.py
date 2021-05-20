@@ -40,18 +40,18 @@ def runRound(pair):
     moduleB = importlib.import_module(STRATEGY_FOLDER+"."+pair[1])
     memoryA = None
     memoryB = None
-    
+
     LENGTH_OF_GAME = int(200-40*np.log(random.random())) # The games are a minimum of 50 turns long. The np.log here guarantees that every turn after the 50th has an equal (low) chance of being the final turn.
     history = np.zeros((2,LENGTH_OF_GAME),dtype=int)
-    
+
     for turn in range(LENGTH_OF_GAME):
         playerAmove, memoryA = moduleA.strategy(getVisibleHistory(history,0,turn),memoryA)
         playerBmove, memoryB = moduleB.strategy(getVisibleHistory(history,1,turn),memoryB)
         history[0,turn] = strategyMove(playerAmove)
         history[1,turn] = strategyMove(playerBmove)
-        
+
     return history
-    
+
 def tallyRoundScores(history):
     scoreA = 0
     scoreB = 0
@@ -62,7 +62,7 @@ def tallyRoundScores(history):
         scoreA += pointsArray[playerAmove][playerBmove]
         scoreB += pointsArray[playerBmove][playerAmove]
     return scoreA/ROUND_LENGTH, scoreB/ROUND_LENGTH
-    
+
 def outputRoundResults(f, pair, roundHistory, scoresA, scoresB):
     f.write(pair[0]+" (P1)  VS.  "+pair[1]+" (P2)\n")
     for p in range(2):
@@ -73,13 +73,13 @@ def outputRoundResults(f, pair, roundHistory, scoresA, scoresB):
     f.write("Final score for "+pair[0]+": "+str(scoresA)+"\n")
     f.write("Final score for "+pair[1]+": "+str(scoresB)+"\n")
     f.write("\n")
-    
+
 def pad(stri, leng):
     result = stri
     for i in range(len(stri),leng):
         result = result+" "
     return result
-    
+
 def runFullPairingTournament(inFolder, outFile):
     print("Starting tournament, reading files from "+inFolder)
     scoreKeeper = {}
@@ -87,11 +87,11 @@ def runFullPairingTournament(inFolder, outFile):
     for file in os.listdir(inFolder):
         if file.endswith(".py"):
             STRATEGY_LIST.append(file[:-3])
-            
-            
+
+
     for strategy in STRATEGY_LIST:
         scoreKeeper[strategy] = 0
-        
+
     f = open(outFile,"w+")
     for pair in itertools.combinations(STRATEGY_LIST, r=2):
         roundHistory = runRound(pair)
@@ -99,22 +99,31 @@ def runFullPairingTournament(inFolder, outFile):
         outputRoundResults(f, pair, roundHistory, scoresA, scoresB)
         scoreKeeper[pair[0]] += scoresA
         scoreKeeper[pair[1]] += scoresB
-        
+
     scoresNumpy = np.zeros(len(scoreKeeper))
     for i in range(len(STRATEGY_LIST)):
         scoresNumpy[i] = scoreKeeper[STRATEGY_LIST[i]]
     rankings = np.argsort(scoresNumpy)
 
-    f.write("\n\nTOTAL SCORES\n")
+    msg = "\nTOTAL SCORES\n"
+    print(msg)
+    f.write(msg)
     for rank in range(len(STRATEGY_LIST)):
         i = rankings[-1-rank]
         score = scoresNumpy[i]
         scorePer = score/(len(STRATEGY_LIST)-1)
-        f.write("#"+str(rank+1)+": "+pad(STRATEGY_LIST[i]+":",16)+' %.3f'%score+'  (%.3f'%scorePer+" average)\n")
-        
+        msg = "#"+str(rank+1)+": "+pad(STRATEGY_LIST[i]+":",16)+' %.3f'%score+'  (%.3f'%scorePer+" average)\n"
+        f.write(msg)
+        print(msg, end="")
+
+
     f.flush()
     f.close()
-    print("Done with everything! Results file written to "+RESULTS_FILE)
-    
-    
+    print("\nDone with everything! Results file written to "+RESULTS_FILE)
+
+
 runFullPairingTournament(STRATEGY_FOLDER, RESULTS_FILE)
+
+
+# for i in range(10):
+#     runFullPairingTournament(STRATEGY_FOLDER, RESULTS_FILE)
