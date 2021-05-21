@@ -3,6 +3,7 @@ import itertools
 import importlib
 import numpy as np
 import random
+from tqdm import tqdm
 
 STRATEGY_FOLDER = "exampleStrats"
 RESULTS_FILE = "results.txt"
@@ -80,7 +81,7 @@ def pad(stri, leng):
         result = result+" "
     return result
 
-def runFullPairingTournament(inFolder, outFile):
+def runFullPairingTournament(inFolder, outFile, silent=False):
     print("Starting tournament, reading files from "+inFolder)
     scoreKeeper = {}
     STRATEGY_LIST = []
@@ -106,7 +107,8 @@ def runFullPairingTournament(inFolder, outFile):
     rankings = np.argsort(scoresNumpy)
 
     msg = "\nTOTAL SCORES\n"
-    print(msg)
+    if not silent:
+        print(msg)
     f.write(msg)
     for rank in range(len(STRATEGY_LIST)):
         i = rankings[-1-rank]
@@ -114,16 +116,28 @@ def runFullPairingTournament(inFolder, outFile):
         scorePer = score/(len(STRATEGY_LIST)-1)
         msg = "#"+str(rank+1)+": "+pad(STRATEGY_LIST[i]+":",16)+' %.3f'%score+'  (%.3f'%scorePer+" average)\n"
         f.write(msg)
-        print(msg, end="")
-
-
+        if not silent:
+            print(msg, end="")
+        if STRATEGY_LIST[i] in tracked_strat:
+            with open(f"{STRATEGY_LIST[i]}.txt", "a") as file:
+                file.write(f"{scorePer}\n")
     f.flush()
     f.close()
-    print("\nDone with everything! Results file written to "+RESULTS_FILE)
+    if not silent:
+        print("\nDone with everything! Results file written to "+RESULTS_FILE)
 
 
+tracked_strat = ["forgetfulUnforgiving"]
 runFullPairingTournament(STRATEGY_FOLDER, RESULTS_FILE)
 
 
-# for i in range(10):
-#     runFullPairingTournament(STRATEGY_FOLDER, RESULTS_FILE)
+for i in tqdm(range(100)):
+    runFullPairingTournament(STRATEGY_FOLDER, RESULTS_FILE, silent=True)
+    for strat in tracked_strat:
+        score = 0
+        with open(f"{tracked_strat}.txt", "r") as file:
+            lines = file.read().split("\n")
+        for line in lines:
+            if line:
+                score += int(line)
+        print(f"{strat}: {score}")
