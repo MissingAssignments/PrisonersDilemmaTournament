@@ -146,32 +146,32 @@ tracked_strat = {
 
 runFullPairingTournament(STRATEGY_FOLDER, RESULTS_FILE)
 
-iterations = 100
-for i in tqdm(range(iterations)):
-	x = Thread(target=runFullPairingTournament, args=(STRATEGY_FOLDER, RESULTS_FILE, True))
-	x.start()
-print("Waiting for IO operations to finish...")
-# print(tracked_strat)
-memory_done = 1
+# iterations = 100
+# for i in tqdm(range(iterations)):
+# 	x = Thread(target=runFullPairingTournament, args=(STRATEGY_FOLDER, RESULTS_FILE, True))
+# 	x.start()
+# print("Waiting for IO operations to finish...")
+# # print(tracked_strat)
+# memory_done = 1
 
-with tqdm(total=iterations) as pbar:
-	while True:
-		# tqdm(done)
+# with tqdm(total=iterations) as pbar:
+# 	while True:
+# 		# tqdm(done)
 
-		# sleep(1)
+# 		# sleep(1)
 
-		if done == iterations + 1:
-			for strat in tracked_strat:
-				total_score = 0
-				# print(tracked_strat)
-				# print(tracked_strat[strat])
-				for score in tracked_strat[strat]:
-					# print(score)
-					# pass
-					total_score += float(score)
-				print(f"{pad(strat,16)}: {total_score/len(tracked_strat[strat])}")
-			break
+# 		if done == iterations + 1:
+# 			for strat in tracked_strat:
+# 				total_score = 0
+# 				# print(tracked_strat)
+# 				# print(tracked_strat[strat])
+# 				for score in tracked_strat[strat]:
+# 					# print(score)
+# 					# pass
+# 					total_score += float(score)
+# 				print(f"{pad(strat,16)}: {total_score/len(tracked_strat[strat])}")
+# 			break
 
-		while memory_done < done:
-			pbar.update(1)
-			memory_done += 1
+# 		while memory_done < done:
+# 			pbar.update(1)
+# 			memory_done += 1
